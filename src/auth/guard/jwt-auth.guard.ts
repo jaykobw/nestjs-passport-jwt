@@ -49,6 +49,10 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
         response.clearCookie('refresh-cookie');
         throw new UnauthorizedException();
       }
+
+      /**
+       * if access cookie is expired and the refresh cookie is still valid, we generate a new access-token
+       */
     } catch (error) {
       throw new UnauthorizedException();
     }
