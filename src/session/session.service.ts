@@ -1,26 +1,49 @@
 import { Injectable } from '@nestjs/common';
+import { Repository } from 'typeorm';
+import { Session } from './entities/session.entity';
+import { InjectRepository } from '@nestjs/typeorm';
 import { CreateSessionDto } from './dto/create-session.dto';
-import { UpdateSessionDto } from './dto/update-session.dto';
+import { FindSessionByIdProvider } from './providers/find-session-by-id.provider';
+import { CreateSessionProvider } from './providers/create-session.provider';
+import { IActiveUser } from 'src/auth/interfaces/active-user.interface';
 
 @Injectable()
 export class SessionService {
-  create(createSessionDto: CreateSessionDto) {
-    return 'This action adds a new session';
+  constructor(
+    /**
+     * Inject SessionRepository
+     */
+    @InjectRepository(Session)
+    private readonly sessionRepository: Repository<Session>,
+    /**
+     * Inject FindSessionByIdProvider
+     */
+    private readonly findSessionByIdProvider: FindSessionByIdProvider,
+    /**
+     * Inject CreateSessionProvider
+     */
+    private readonly createSessionProvider: CreateSessionProvider,
+  ) {}
+
+  public async create(
+    createSessionDto: CreateSessionDto,
+    currentUser: IActiveUser,
+  ): Promise<Session> {
+    return await this.createSessionProvider.createSession(
+      createSessionDto,
+      currentUser,
+    );
   }
 
-  findAll() {
-    return `This action returns all session`;
+  public async show(sessionId: string): Promise<Session> {
+    const session = await this.findSessionByIdProvider.findById(sessionId);
+
+    return session;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} session`;
-  }
+  public async destory(sessionId: string) {
+    const session = await this.findSessionByIdProvider.findById(sessionId);
 
-  update(id: number, updateSessionDto: UpdateSessionDto) {
-    return `This action updates a #${id} session`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} session`;
+    return await this.sessionRepository.delete(session.id);
   }
 }

@@ -15,7 +15,11 @@ export class AuthTokensProvider {
     readonly configService: ConfigService,
   ) {}
 
-  public async generateAuthTokens(userId: number, email: string) {
+  public async generateAuthTokens(
+    userId: number,
+    email: string,
+    sessionId: string,
+  ) {
     const [access_token, refresh_token] = await Promise.all([
       // access token
       this.jwtService.signAsync(
@@ -37,6 +41,7 @@ export class AuthTokensProvider {
       this.jwtService.signAsync(
         {
           sub: userId,
+          sid: sessionId,
         },
         {
           algorithm: 'RS256',

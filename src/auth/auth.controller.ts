@@ -57,7 +57,12 @@ export class AuthController {
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const tokens = await this.authService.login(req.user as User);
+    const metaData = {
+      ip: req.ip,
+      userAgent: req.headers['user-agent'] || 'unknown',
+    };
+    const tokens = await this.authService.login(req.user as User, metaData);
+
     this.setAuthCookies(res, req, tokens);
 
     return req.user;

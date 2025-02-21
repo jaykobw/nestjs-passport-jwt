@@ -6,10 +6,12 @@ import {
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { UserService } from 'src/user/user.service';
 import { BcryptHashProvider } from './providers/bcrypt-hash.provider';
-import { JwtService } from '@nestjs/jwt';
 import { User } from 'src/user/entities/user.entity';
 import { ConfigService } from '@nestjs/config';
 import { AuthTokensProvider } from './providers/auth-tokens.provider';
+import { SessionService } from 'src/session/session.service';
+import { IActiveUser } from './interfaces/active-user.interface';
+import { CreateSessionDto } from 'src/session/dto/create-session.dto';
 
 @Injectable()
 export class AuthService {
@@ -23,9 +25,9 @@ export class AuthService {
      */
     private readonly bcryptHashProvider: BcryptHashProvider,
     /**
-     * Inject JwtService
+     * Inject SessionService
      */
-    private readonly jwtService: JwtService,
+    private readonly sessionService: SessionService,
     /**
      * Inject configService
      */
@@ -52,17 +54,37 @@ export class AuthService {
     return await this.userService.create(createUserDto);
   }
 
-  public async login(user: User) {
+  public async login(user: User, metaData) {
     try {
+      const sessionData = {
+        name: 'api',
+        ip: metaData?.ip,
+        userAgent: metaData?.userAgent,
+        expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+      } as CreateSessionDto;
+
+      const currentUser = {
+        id: user.id,
+        email: user.email,
+      } as IActiveUser;
+
+      const newSession = await this.sessionService.create(
+        sessionData,
+        currentUser,
+      );
+
       const { access_token, refresh_token } =
-        await this.authTokensProvider.generateAuthTokens(user.id, user.email);
+        await this.authTokensProvider.generateAuthTokens(
+          user.id,
+          user.email,
+          newSession.id,
+        );
 
       return {
         access_token,
         refresh_token,
       };
     } catch (error) {
-      console.log(error);
       throw new BadRequestException(error);
     }
   }

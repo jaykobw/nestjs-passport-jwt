@@ -13,6 +13,7 @@ import { RefreshStrategy } from './strategy/refresh.strategy';
 import { JwtAuthGuard } from './guard/jwt-auth.guard';
 import { AuthTokensProvider } from './providers/auth-tokens.provider';
 import jwtConfig from 'src/config/jwt.config';
+import { SessionModule } from 'src/session/session.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import jwtConfig from 'src/config/jwt.config';
         },
       }),
     }),
+    SessionModule,
   ],
   controllers: [AuthController],
   providers: [

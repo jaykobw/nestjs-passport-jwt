@@ -8,6 +8,8 @@ async function bootstrap() {
 
   process.env.TZ = 'Africa/Nairobi';
 
+  app.setGlobalPrefix('api');
+
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,

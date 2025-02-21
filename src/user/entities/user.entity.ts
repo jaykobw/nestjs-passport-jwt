@@ -3,11 +3,13 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { Exclude } from 'class-transformer';
+import { Session } from 'src/session/entities/session.entity';
 
 @Entity()
 export class User {
@@ -45,6 +47,9 @@ export class User {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @OneToMany(() => Session, (session) => session.user)
+  session: Session[];
 
   @BeforeInsert()
   async encryptPassword() {
