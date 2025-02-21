@@ -47,5 +47,6 @@ import { SessionModule } from 'src/session/session.module';
     JwtAuthGuard,
     AuthTokensProvider,
   ],
+  exports: [AuthModule, AuthTokensProvider],
 })
 export class AuthModule {}

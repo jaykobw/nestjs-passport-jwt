@@ -16,13 +16,13 @@ export class RefreshStrategy extends PassportStrategy(Strategy, 'refresh') {
         },
       ]),
       secretOrKey: configService.get<string>('jwt.jwtRefreshTokenPublicKey'),
-      ignoreExpiration: true,
+      ignoreExpiration: false,
+      passReqToCallback: true,
       algorithms: ['RS256'],
     });
   }
 
-  async validate(req: Request, payload: any) {
-    console.log(payload);
+  public async validate(req: Request, payload: any) {
     return payload;
   }
 }

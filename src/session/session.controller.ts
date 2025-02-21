@@ -7,7 +7,7 @@ export class SessionController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.sessionService.show(id);
+    return this.sessionService.findById(id);
   }
 
   @Delete(':id')

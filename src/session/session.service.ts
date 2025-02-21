@@ -35,7 +35,7 @@ export class SessionService {
     );
   }
 
-  public async show(sessionId: string): Promise<Session> {
+  public async findById(sessionId: string): Promise<Session> {
     const session = await this.findSessionByIdProvider.findById(sessionId);
 
     return session;
